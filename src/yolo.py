@@ -36,7 +36,7 @@ spoon_center = [0,0]
 while True:
     success, img = cap.read()
     results = model(img, stream=True)
-
+    spoon_center = [0,0]
     # coordinates
     for r in results:
         boxes = r.boxes
@@ -51,16 +51,16 @@ while True:
 
             # confidence
             confidence = math.ceil((box.conf[0]*100))/100
-            print("Confidence --->",confidence)
+            #print("Confidence --->",confidence)
 
             # class name
             cls = int(box.cls[0])
-            print("Class name -->", classNames[cls])
+            #print("Class name -->", classNames[cls])
             if(classNames[cls]=="person"):
                 person_time = time.time()
                 person_center[0] = (x1+x2)/2
                 person_center[1] = (y1+y2)/2
-            if(classNames[cls]=="spoon"):
+            if(classNames[cls]=="spoon" or classNames[cls]=="toothbrush"):
                 spoon_time = time.time()
                 spoon_center[0] = (x1+x2)/2
                 spoon_center[1] = (y1+y2)/2
@@ -76,10 +76,11 @@ while True:
     	
         dx = person_center[0] - spoon_center[0]
         dy = person_center[1] - spoon_center[1]
-        if(math.sqrt(dx*dx + dy*dy)<300):
+        print("Diff %.2f" % (math.sqrt(dx*dx + dy*dy)))
+        if(math.sqrt(dx*dx + dy*dy)<100):
             eat_time = time.time()
     	    
-    if(fsm=="screen_on" and time.time() - eat_time > 10.0):
+    if(fsm=="screen_on" and time.time() - eat_time > 60.0):
         turn_off_keyboard_cmd = "xinput --disable " + str(os.environ['keyboard_id'])
         keyboard_status = subprocess.check_output(turn_off_keyboard_cmd, shell=True)
         monitor_status = subprocess.check_output("xset -display $DISPLAY dpms force off", shell=True)
