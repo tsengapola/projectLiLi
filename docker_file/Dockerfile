@@ -1,5 +1,5 @@
-FROM ubuntu:22.04
-#FROM nvidia/cuda:12.4.1-cudnn-devel-ubuntu22.04
+#FROM ubuntu:22.04
+FROM nvidia/cuda:12.4.1-cudnn-devel-ubuntu22.04
 
 RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
 
@@ -47,7 +47,7 @@ RUN apt install -y python3-pip
 RUN apt install -y libopencv-dev python3-opencv
 
 # Install colcon
-RUN apt install -y python3-colcon-common-extensions
+RUN apt update && apt install -y python3-colcon-common-extensions
 
 #gst
 RUN apt install -y libgstreamer1.0-0 gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly gstreamer1.0-libav gstreamer1.0-tools gstreamer1.0-x gstreamer1.0-alsa gstreamer1.0-gl gstreamer1.0-gtk3 gstreamer1.0-qt5 gstreamer1.0-pulseaudio
@@ -63,6 +63,10 @@ RUN apt install -y x11-xserver-utils
 RUN pip3 install ultralytics
 
 RUN apt install -y xinput
+
+RUN pip3 uninstall -y numpy
+
+RUN pip3 install "numpy<2.0"
 
 WORKDIR /root
 
